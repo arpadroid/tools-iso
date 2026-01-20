@@ -16,10 +16,10 @@
         "useDefineForClassFields": false,
         "strictPropertyInitialization": false,
         "rootDir": "./src",
-        "outDir": "./.tmp/.types",
+        "outDir": "./dist/@types",
         "jsx": "react",
         "skipLibCheck": true
     },
     "include": ["src/**/*"],
-    "exclude": ["./node_modules", "dist", "./dist/@types"]
+    "exclude": ["./node_modules", "dist", "./dist/@types", "**/*.test.js"]
 }

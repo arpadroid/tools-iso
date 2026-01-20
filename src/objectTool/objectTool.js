@@ -50,3 +50,52 @@ export function mergeObjects(obj = {}, obj2 = {}, strict = false) {
     }
     return rv;
 }
+
+/**
+ * Copies an object and its properties.
+ * @param {Record<string, any>} object
+ * @returns {Record<string, any>}
+ */
+export function copyObjectProps(object) {
+    /** @type {Record<string, any>} */
+    const props = {};
+    for (const [key, value] of Object.entries(object)) {
+        if (Array.isArray(value)) {
+            props[key] = [...value];
+        } else if (isObject(value)) {
+            props[key] = { ...value };
+        } else {
+            props[key] = value;
+        }
+    }
+    return props;
+}
+
+/**
+ * Binds methods to an object.
+ * @param {Record<string, any>} obj
+ * @param {...string} methods
+ */
+export function bind(obj, ...methods) {
+    for (const method of methods) {
+        if (typeof obj[method] !== 'function') {
+            console.error(`Method ${method} is not a function in`, obj);
+            continue;
+        }
+        obj[method] = obj[method].bind(obj);
+    }
+}
+
+/**
+ * Sorts an object by its keys.
+ * @param {Record<string, unknown>} obj
+ * @returns {Record<string, unknown>}
+ */
+export function sortKeys(obj) {
+    /** @type {Record<string, unknown>} */
+    const ordered = {};
+    Object.keys(obj)
+        .sort()
+        .forEach(key => (ordered[key] = obj[key]));
+    return ordered;
+}

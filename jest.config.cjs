@@ -5,6 +5,10 @@ module.exports = {
     testMatch: ['<rootDir>/src/**/*.test.js', '<rootDir>/src/**/*.test.mjs', '<rootDir>/src/**/*.spec.js', '<rootDir>/src/**/*.spec.mjs'],
     moduleFileExtensions: ['js', 'mjs'],
     setupFilesAfterEnv: ['<rootDir>/test/setupTests.cjs'],
+    moduleNameMapper: {
+        '^@arpadroid/tools-iso$': '<rootDir>/src/index.js',
+        '^@arpadroid/tools-iso/(.*)$': '<rootDir>/src/$1'
+    },
     transform: {
         '^.+\\.m?js$': ['babel-jest', { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] }]
     },
@@ -19,7 +23,6 @@ module.exports = {
         [
             'jest-junit',
             {
-                // outputDirectory: "",
                 outputName: 'junit.xml'
             }
         ]

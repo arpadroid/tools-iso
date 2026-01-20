@@ -22,17 +22,41 @@
     },
     "exports": {
         ".": "./src/index.js",
-        "./objectTool": {
-            "types": "./dist/@types/objectTool/objectTool.d.ts",
-            "default": "./src/objectTool/objectTool.js"
+        "./arrayTool": {
+            "types": "./dist/@types/arrayTool/arrayTool.d.ts",
+            "default": "./src/arrayTool/arrayTool.js"
+        },
+        "./csvTool": {
+            "types": "./dist/@types/csvTool/csvTool.d.ts",
+            "default": "./src/csvTool/csvTool.js"
+        },
+        "./dateTimeTool": {
+            "types": "./dist/@types/dateTimeTool/dateTimeTool.d.ts",
+            "default": "./src/dateTimeTool/dateTimeTool.js"
         },
         "./functionTool": {
             "types": "./dist/@types/functionTool/functionTool.d.ts",
             "default": "./src/functionTool/functionTool.js"
         },
+        "./objectTool": {
+            "types": "./dist/@types/objectTool/objectTool.d.ts",
+            "default": "./src/objectTool/objectTool.js"
+        },
+        "./regexTool": {
+            "types": "./dist/@types/regexTool/regexTool.d.ts",
+            "default": "./src/regexTool/regexTool.js"
+        },
         "./stringTool": {
             "types": "./dist/@types/stringTool/stringTool.d.ts",
             "default": "./src/stringTool/stringTool.js"
+        },
+        "./urlTool": {
+            "types": "./dist/@types/urlTool/urlTool.d.ts",
+            "default": "./src/urlTool/urlTool.js"
+        },
+        "./validationTool": {
+            "types": "./dist/@types/validationTool/validationTool.d.ts",
+            "default": "./src/validationTool/validationTool.js"
         }
     },
     "files": [
