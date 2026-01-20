@@ -13,7 +13,9 @@ import {
     objectToQueryString,
     sanitizeURL,
     editURL,
-    removeURLParam
+    removeURLParam,
+    removeURLOrigin,
+    getParentPath
 } from './urlTool';
 
 describe('urlTool', () => {
@@ -140,6 +142,28 @@ describe('urlTool', () => {
             const isMatch = matchPath('/users/andriu', '/posts/:postId');
             expect(isMatch).toBe(false);
         });
+
+        it('should not match when path segment differs from non-param route segment', () => {
+            const isMatch = matchPath('/users/123', '/posts/123');
+            expect(isMatch).toBe(false);
+        });
+
+        it('should match dynamic param when path differs but route has param marker', () => {
+            // This tests the case where routeParts[index] !== pathParts[index] but paramIndex === 0
+            const isMatch = matchPath('/api/users/456', '/api/:resource/:id');
+            expect(isMatch).toBe(true);
+        });
+
+        it('should match exact static segments', () => {
+            const isMatch = matchPath('/users/list', '/users/list');
+            expect(isMatch).toBe(true);
+        });
+
+        it('should iterate through all segments and return false on mismatch', () => {
+            // First segment matches, second is a param (matches anything), third mismatches
+            const isMatch = matchPath('/api/users/delete', '/api/:resource/edit');
+            expect(isMatch).toBe(false);
+        });
     });
 
     describe('matchPaths', () => {
@@ -155,6 +179,13 @@ describe('urlTool', () => {
             const routes = ['/posts/:id', '/comments/:id'];
             const isMatch = matchPaths(url, routes);
             expect(isMatch).toBe(false);
+        });
+
+        it('should skip non-string routes', () => {
+            const url = '/users/123';
+            const routes = [null, undefined, 123, '/users/:id'];
+            const isMatch = matchPaths(url, routes);
+            expect(isMatch).toBe(true);
         });
     });
 
@@ -172,6 +203,32 @@ describe('urlTool', () => {
             const queryString = objectToQueryString(object);
             expect(queryString).toBe('?param1=value1&param2=value2');
         });
+
+        it('should handle arrays converted to string', () => {
+            const object = { colors: ['red', 'blue'] };
+            const queryString = objectToQueryString(object);
+            expect(queryString).toBe('?colors=red%2Cblue');
+        });
+
+        it('should skip empty property names', () => {
+            const object = { '': 'value', valid: 'test' };
+            const queryString = objectToQueryString(object);
+            expect(queryString).toBe('?valid=test');
+        });
+
+        it('should handle encoding option', () => {
+            const object = { param: 'hello world' };
+            const encoded = objectToQueryString(object, true);
+            const notEncoded = objectToQueryString(object, false);
+            expect(encoded).toBe('?param=hello%20world');
+            expect(notEncoded).toBe('?param=hello world');
+        });
+
+        it('should handle null/undefined values', () => {
+            const object = { param: null, other: undefined };
+            const queryString = objectToQueryString(object);
+            expect(queryString).toBe('?param=&other=');
+        });
     });
 
     describe('editUrl', () => {
@@ -181,6 +238,34 @@ describe('urlTool', () => {
             const editedUrl = editURL(url, params);
             expect(editedUrl).toBe('https://example.com?param1=newvalue1&param2=value2&param3=value3');
         });
+
+        it('should remove params when value is null', () => {
+            const url = 'https://example.com?param1=value1&param2=value2';
+            const params = { param1: null };
+            const editedUrl = editURL(url, params);
+            expect(editedUrl).toBe('https://example.com?param2=value2');
+        });
+
+        it('should remove params when value is undefined', () => {
+            const url = 'https://example.com?param1=value1&param2=value2';
+            const params = { param1: undefined };
+            const editedUrl = editURL(url, params);
+            expect(editedUrl).toBe('https://example.com?param2=value2');
+        });
+
+        it('should handle URL without query string', () => {
+            const url = 'https://example.com/path';
+            const params = { param1: 'value1' };
+            const editedUrl = editURL(url, params);
+            expect(editedUrl).toBe('https://example.com/path?param1=value1');
+        });
+
+        it('should handle encode option', () => {
+            const url = 'https://example.com';
+            const params = { param: 'hello world' };
+            const editedUrl = editURL(url, params, false);
+            expect(editedUrl).toBe('https://example.com?param=hello world');
+        });
     });
 
     describe('removeParam', () => {
@@ -189,6 +274,107 @@ describe('urlTool', () => {
             const url = 'https://example.com?param1=value1&param2=value2';
             const newUrl = removeURLParam(name, url);
             expect(newUrl).toBe('https://example.com?param2=value2');
+        });
+
+        it('should handle URL without the parameter', () => {
+            const url = 'https://example.com?param1=value1';
+            const newUrl = removeURLParam('nonexistent', url);
+            expect(newUrl).toBe('https://example.com?param1=value1');
+        });
+
+        it('should use window.location.href when url is not a string', () => {
+            // Mock window.location.href
+            const originalWindow = global.window;
+            global.window = { location: { href: 'https://example.com?test=value' } };
+            const newUrl = removeURLParam('test', null);
+            expect(newUrl).toBe('https://example.com');
+            global.window = originalWindow;
+        });
+    });
+
+    describe('getURLParams', () => {
+        it('should handle hash fragments', () => {
+            const url = 'https://example.com?param=value#section';
+            const params = getURLParams(url);
+            expect(params).toEqual({ param: 'value' });
+        });
+
+        it('should handle array parameters', () => {
+            const url = 'https://example.com?colors[]=red&colors[]=blue';
+            const params = getURLParams(url);
+            expect(params.colors).toEqual(['red', 'blue']);
+        });
+
+        it('should decode URL-encoded values', () => {
+            const url = 'https://example.com?name=John%20Doe';
+            const params = getURLParams(url);
+            expect(params.name).toBe('John Doe');
+        });
+    });
+
+    describe('arrayToQueryString', () => {
+        it('should handle encode option false', () => {
+            const queryString = arrayToQueryString('items', ['a', 'b'], false);
+            expect(queryString).toBe('items[]=a&items[]=b');
+        });
+    });
+
+    describe('decodeURIComponentSafe', () => {
+        it('should return value unchanged for non-string', () => {
+            expect(decodeURIComponentSafe(null)).toBe(null);
+            expect(decodeURIComponentSafe(undefined)).toBe(undefined);
+        });
+
+        it('should handle malformed percent encoding', () => {
+            expect(decodeURIComponentSafe('%test')).toBe('%test');
+        });
+
+        it('should return empty string unchanged', () => {
+            expect(decodeURIComponentSafe('')).toBe('');
+        });
+    });
+
+    describe('removeURLOrigin', () => {
+        it('should remove origin from URL', () => {
+            const result = removeURLOrigin('https://example.com/path');
+            expect(result).toBe('/path');
+        });
+
+        it('should handle invalid URL', () => {
+            const result = removeURLOrigin('not-a-valid-url');
+            expect(result).toBe('not-a-valid-url');
+        });
+
+        it('should use window.location.origin for invalid URL when window exists', () => {
+            const originalWindow = global.window;
+            global.window = { location: { origin: 'http://localhost', href: 'http://localhost/' } };
+            const result = removeURLOrigin('http://localhost/test');
+            expect(result).toBe('/test');
+            global.window = originalWindow;
+        });
+
+        it('should fallback to window.location.origin on URL parse error', () => {
+            const originalWindow = global.window;
+            // Set up window with location that can be used as fallback
+            global.window = { location: { origin: 'invalid-url', href: 'invalid-url/' } };
+            // This will throw in new URL() and fall back to window.location.origin replacement
+            const result = removeURLOrigin('invalid-url/path');
+            expect(result).toBe('/path');
+            global.window = originalWindow;
+        });
+    });
+
+    describe('sanitizeURL', () => {
+        it('should sanitize URL with double slashes', () => {
+            const result = sanitizeURL('https://example.com//path//to//file/');
+            expect(result).toBe('/path/to/file');
+        });
+    });
+
+    describe('getParentPath', () => {
+        it('should return parent path', () => {
+            expect(getParentPath('https://example.com/users/123')).toBe('/users');
+            expect(getParentPath('https://example.com/a/b/c')).toBe('/a/b');
         });
     });
 });

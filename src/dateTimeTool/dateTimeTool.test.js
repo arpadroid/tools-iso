@@ -17,7 +17,8 @@ import {
     getTimeAgo,
     validateDateFormat,
     getDaysInMonth,
-    setDateToMonday
+    setDateToMonday,
+    addTimezoneOffset
 } from './dateTimeTool';
 
 describe('DateTimeTool', () => {
@@ -203,6 +204,62 @@ describe('DateTimeTool', () => {
             expect(Number(minutes)).toBe(date.getMinutes());
             expect(Number(seconds)).toBe(date.getSeconds());
         });
+
+        test('should return YY format (2-digit year)', () => {
+            const date = new Date('2025-06-15');
+            const formattedDate = formatDate(date, 'YY-MM-DD');
+            expect(formattedDate).toBe('25-06-15');
+        });
+
+        test('should return full month name with MMMM', () => {
+            const date = new Date('2025-06-15');
+            const formattedDate = formatDate(date, 'MMMM DD, YYYY');
+            expect(formattedDate).toBe('June 15, 2025');
+        });
+
+        test('should return short month name with MMM', () => {
+            const date = new Date('2025-06-15');
+            const formattedDate = formatDate(date, 'MMM DD, YYYY');
+            expect(formattedDate).toBe('Jun 15, 2025');
+        });
+
+        test('should return non-padded day with D', () => {
+            const date = new Date('2025-06-05');
+            const formattedDate = formatDate(date, 'D/MM/YYYY');
+            expect(formattedDate).toBe('5/06/2025');
+        });
+
+        test('should return NaN for invalid date', () => {
+            const formattedDate = formatDate('invalid', 'YYYY-MM-DD');
+            expect(formattedDate).toBe('NaN-NaN-NaN');
+        });
+
+        test('should return empty string when formatted result is NaN', () => {
+            // formatDate returns '' when the full result equals 'NaN'
+            expect(formatDate('invalid', 'NaN')).toBe('');
+        });
+
+        test('should add timezone offset when addOffset is true', () => {
+            const date = new Date('2025-06-15T12:00:00Z');
+            const formattedDate = formatDate(date, 'YYYY-MM-DD HH:mm:ss', true);
+            // The offset modifies the date, so just check it's a valid formatted date
+            expect(formattedDate).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
+        });
+
+        test('should use custom locale', () => {
+            const date = new Date('2025-06-15');
+            const formattedDate = formatDate(date, 'MMMM DD, YYYY', false, 'es-ES');
+            expect(formattedDate).toMatch(/junio/i);
+        });
+    });
+
+    describe('addTimezoneOffset', () => {
+        test('should add timezone offset to a date', () => {
+            const date = new Date('2025-06-15T12:00:00Z');
+            const originalTime = date.getTime();
+            const offsetDate = addTimezoneOffset(new Date(date));
+            expect(offsetDate.getTime()).not.toBe(originalTime);
+        });
     });
 
     describe('getTimeAgo', () => {
@@ -210,6 +267,17 @@ describe('DateTimeTool', () => {
             const date = new Date(Date.now() - 1000);
             const timeAgo = getTimeAgo(date);
             expect(timeAgo).toBe('Just now');
+        });
+
+        test('should return empty string for null date', () => {
+            const timeAgo = getTimeAgo(null);
+            expect(timeAgo).toBe('');
+        });
+
+        test('should return "A few seconds ago" for 10-60 seconds', () => {
+            const date = new Date(Date.now() - 30000);
+            const timeAgo = getTimeAgo(date);
+            expect(timeAgo).toBe('A few seconds ago');
         });
 
         test('should return a time ago string with minutes', () => {
@@ -230,6 +298,31 @@ describe('DateTimeTool', () => {
             expect(timeAgo).toBe('1 hour ago');
         });
 
+        test('should return plural hours for multiple hours', () => {
+            const date = new Date(Date.now() - 3600000 * 5);
+            const timeAgo = getTimeAgo(date);
+            expect(timeAgo).toBe('5 hours ago');
+        });
+
+        test('should return "Today at" for same day beyond 12 hours', () => {
+            const now = new Date();
+            const date = new Date(now);
+            date.setHours(now.getHours() - 13);
+            if (date.getDate() === now.getDate()) {
+                const timeAgo = getTimeAgo(date, now);
+                expect(timeAgo).toMatch(/Today at \d{2}:\d{2}/);
+            }
+        });
+
+        test('should return "Yesterday at" for yesterday date', () => {
+            const now = new Date();
+            // Create a date that's definitely yesterday (noon yesterday)
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            yesterday.setHours(12, 0, 0, 0);
+            expect(getTimeAgo(yesterday, now)).toMatch(/Yesterday at/);
+        });
+
         test('should return a time ago string with hours', () => {
             const date = new Date(Date.now() - 3600000 * 24);
             const timeAgo = getTimeAgo(date);
@@ -237,14 +330,11 @@ describe('DateTimeTool', () => {
         });
 
         test('should return a time ago string with day of the week', () => {
-            /**
-             * @todo Fix this test.
-             */
-            // const monday = setDateToMonday(new Date());
-            // const friday = new Date(monday);
-            // friday.setDate(monday.getDate() + 4);
-            // const timeAgo = getTimeAgo(monday, friday);
-            // expect(timeAgo).toBe('Monday at ' + formatDate(monday, 'HH:mm'));
+            const monday = setDateToMonday(new Date());
+            const friday = new Date(monday);
+            friday.setDate(monday.getDate() + 4);
+            const timeAgo = getTimeAgo(monday, friday);
+            expect(timeAgo).toBe('Monday at ' + formatDate(monday, 'HH:mm'));
         });
 
         test('should return a time ago string with a custom format', () => {
@@ -276,6 +366,18 @@ describe('DateTimeTool', () => {
     describe('setDateToMonday', () => {
         test('should return the date set to the first day of the week', () => {
             const date = new Date('2021-01-01');
+            const monday = setDateToMonday(date);
+            expect(monday.getDay()).toBe(1);
+        });
+
+        test('should not change date if already Monday', () => {
+            const date = new Date('2025-01-20'); // This is a Monday
+            const monday = setDateToMonday(date);
+            expect(monday.getDay()).toBe(1);
+        });
+
+        test('should handle Sunday correctly', () => {
+            const date = new Date('2025-01-19'); // This is a Sunday
             const monday = setDateToMonday(date);
             expect(monday.getDay()).toBe(1);
         });

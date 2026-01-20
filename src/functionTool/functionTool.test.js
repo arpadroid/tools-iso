@@ -91,4 +91,94 @@ describe('Function Tool', () => {
 
         await expect(promise).rejects.toMatchObject({ name: 'AbortError' });
     });
+
+    test('waitFor function should abort immediately if signal already aborted', async () => {
+        jest.useRealTimers();
+        const controller = new AbortController();
+        controller.abort();
+
+        const promise = waitFor(() => true, {
+            timeout: 1000,
+            interval: 50,
+            signal: controller.signal
+        });
+
+        await expect(promise).rejects.toMatchObject({ name: 'AbortError' });
+    });
+
+    test('waitFor function should handle abort during async condition check', async () => {
+        jest.useRealTimers();
+        const controller = new AbortController();
+        let checkCount = 0;
+
+        const promise = waitFor(
+            async () => {
+                checkCount++;
+                // Abort after first check
+                if (checkCount === 1) {
+                    controller.abort();
+                }
+                await new Promise(resolve => setTimeout(resolve, 10));
+                return false;
+            },
+            {
+                timeout: 2000,
+                interval: 50,
+                signal: controller.signal
+            }
+        );
+
+        await expect(promise).rejects.toMatchObject({ name: 'AbortError' });
+    });
+
+    test('waitFor function should work with immediate=false', async () => {
+        jest.useRealTimers();
+        let count = 0;
+
+        const result = await waitFor(
+            () => {
+                count += 1;
+                return count >= 2;
+            },
+            { timeout: 1000, interval: 50, immediate: false }
+        );
+
+        expect(result).toBe(true);
+    });
+
+    test('waitFor function should handle condition throwing error', async () => {
+        jest.useRealTimers();
+
+        const promise = waitFor(
+            () => {
+                throw new Error('Test error');
+            },
+            { timeout: 1000, interval: 50 }
+        );
+
+        await expect(promise).rejects.toThrow('Test error');
+    });
+
+    test('debounce function should cancel previous timer on new call', async () => {
+        jest.useFakeTimers();
+        const fn = jest.fn();
+        const debouncedFn = debounce(fn, 100);
+
+        debouncedFn('first');
+        jest.advanceTimersByTime(50);
+        debouncedFn('second');
+        jest.advanceTimersByTime(100);
+
+        expect(fn).toHaveBeenCalledTimes(1);
+        expect(fn).toHaveBeenCalledWith('second');
+    });
+
+    test('throttle function should pass arguments correctly', async () => {
+        jest.useFakeTimers();
+        const fn = jest.fn();
+        const throttledFn = throttle(fn, 100);
+
+        throttledFn('arg1', 'arg2');
+        expect(fn).toHaveBeenCalledWith('arg1', 'arg2');
+    });
 });
