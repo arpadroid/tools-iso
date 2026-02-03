@@ -29,10 +29,11 @@ export function isEmptyObject(obj) {
  * Merges two objects recursively.
  * @param {Record<string, any>} obj
  * @param {Record<string, any>} obj2
- * @param {boolean} strict - Strict mode will filter out properties that are not in the original object.
+ * @param {{strict?: boolean; mergeArrays?: boolean}} options - Options for merging objects.
  * @returns {Record<string, any>}
  */
-export function mergeObjects(obj = {}, obj2 = {}, strict = false) {
+export function mergeObjects(obj = {}, obj2 = {}, options = {}) {
+    const { strict = false, mergeArrays = false } = options;
     if (Object.keys(obj2).length === 0) {
         return obj;
     }
@@ -42,8 +43,10 @@ export function mergeObjects(obj = {}, obj2 = {}, strict = false) {
         if (strict && !hasKeyInRv) {
             continue;
         }
-        if (isObject(value) && isObject(rv[key])) {
-            rv[key] = mergeObjects(rv[key], value, strict);
+        if (mergeArrays && Array.isArray(value) && Array.isArray(rv[key])) {
+            rv[key] = [...new Set([...rv[key], ...value])];
+        } else if (isObject(value) && isObject(rv[key])) {
+            rv[key] = mergeObjects(rv[key], value, options);
         } else {
             rv[key] = value;
         }
