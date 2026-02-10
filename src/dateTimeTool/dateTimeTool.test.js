@@ -334,7 +334,13 @@ describe('DateTimeTool', () => {
             const friday = new Date(monday);
             friday.setDate(monday.getDate() + 4);
             const timeAgo = getTimeAgo(monday, friday);
-            expect(timeAgo).toBe('Monday at ' + formatDate(monday, 'HH:mm'));
+            let day = 'Monday';
+            if (monday.getDay() === new Date().getDay()) {
+                day = 'Today';
+            } else if (monday.getDay() === (new Date().getDay() - 1 + 7) % 7) {
+                day = 'Yesterday';
+            }
+            expect(timeAgo).toBe(`${day} at ` + formatDate(monday, 'HH:mm'));
         });
 
         test('should return a time ago string with a custom format', () => {

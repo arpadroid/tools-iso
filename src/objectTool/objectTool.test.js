@@ -70,7 +70,7 @@ describe('Object Tool', () => {
         test('should filter out properties not in the original object in strict mode', () => {
             const obj1 = { a: 1, b: 2 };
             const obj2 = { b: 3, c: 4 };
-            const merged = mergeObjects(obj1, obj2, true);
+            const merged = mergeObjects(obj1, obj2, { strict: true });
             expect(merged).toEqual({ a: 1, b: 3 });
         });
 
@@ -89,7 +89,7 @@ describe('Object Tool', () => {
         test('should merge nested objects in strict mode', () => {
             const obj1 = { a: { b: 1, c: 2 } };
             const obj2 = { a: { b: 3, d: 4 } };
-            const merged = mergeObjects(obj1, obj2, true);
+            const merged = mergeObjects(obj1, obj2, { strict: true });
             expect(merged).toEqual({ a: { b: 3, c: 2 } });
         });
     });
