@@ -17,7 +17,7 @@
         "prepublishOnly": "npm run test && npm run lint && npm run build",
         "test:coverage": "jest --coverage",
         "test:watch": "jest --watch",
-        "test": "jest",
+        "test": "NODE_OPTIONS='--no-warnings --experimental-vm-modules' jest",
         "build": "tsc"
     },
     "exports": {
@@ -80,9 +80,6 @@
         "url": "https://github.com/arpadroid/tools-iso/issues"
     },
     "homepage": "https://github.com/arpadroid/tools-iso#readme",
-    "dependencies": {
-        "jest-junit": "^16.0.0"
-    },
     "devDependencies": {
         "@babel/preset-env": "^7.23.9",
         "@eslint/js": "^9.39.1",
