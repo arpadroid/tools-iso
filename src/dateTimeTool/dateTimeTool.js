@@ -75,72 +75,106 @@ export function isPast(dateTime) {
 
 /**
  * Checks if a given date is today.
- * @param {Date} dateTime - The date and time to compare.
- * @returns {boolean} - True if the date is today, false otherwise.
+ * @param {Date} dateTime
+ * @param {Date} [now]
+ * @returns {boolean}
  */
-export function isToday(dateTime) {
+export function isToday(dateTime, now = new Date()) {
     const date = new Date(dateTime);
-    const today = new Date();
-    return date.getDate() === today.getDate();
+    const today = new Date(now);
+    return (
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
+    );
 }
 
 /**
- * Checks if a given date is yesterday.
- * @param {Date} dateTime - The date and time to compare.
- * @returns {boolean} - True if the date is yesterday, false otherwise.
+ * Checks if a given date is yesterday (relative to optional reference date).
+ * @param {Date} dateTime
+ * @param {Date} [now]
+ * @returns {boolean}
  */
-export function isYesterday(dateTime) {
+export function isYesterday(dateTime, now = new Date()) {
     const date = new Date(dateTime);
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    return date.getDate() === yesterday.getDate();
+    const ref = new Date(now);
+    const yesterday = new Date(ref);
+    yesterday.setDate(ref.getDate() - 1);
+    return (
+        date.getDate() === yesterday.getDate() &&
+        date.getMonth() === yesterday.getMonth() &&
+        date.getFullYear() === yesterday.getFullYear()
+    );
 }
 
 /**
- * Checks if a given date is tomorrow.
- * @param {Date} dateTime - The date and time to compare.
- * @returns {boolean} - True if the date is tomorrow, false otherwise.
+ * Checks if a given date is tomorrow (relative to optional reference date).
+ * @param {Date} dateTime
+ * @param {Date} [now]
+ * @returns {boolean}
  */
-export function isTomorrow(dateTime) {
+export function isTomorrow(dateTime, now = new Date()) {
     const date = new Date(dateTime);
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return date.getDate() === tomorrow.getDate();
+    const ref = new Date(now);
+    const tomorrow = new Date(ref);
+    tomorrow.setDate(ref.getDate() + 1);
+    return (
+        date.getDate() === tomorrow.getDate() &&
+        date.getMonth() === tomorrow.getMonth() &&
+        date.getFullYear() === tomorrow.getFullYear()
+    );
 }
 
 /**
- * Checks if a given date is within the current week.
- * @param {Date} dateTime - The date and time to compare.
- * @returns {boolean} - True if the date is within the current week, false otherwise.
+ * Checks if a given date is within the same week as the reference date (week starts on Monday).
+ * @param {Date} dateTime
+ * @param {Date} [now]
+ * @returns {boolean}
  */
-export function isThisWeek(dateTime) {
+export function isThisWeek(dateTime, now = new Date()) {
     const date = new Date(dateTime);
-    const today = new Date();
-    const firstDayOfWeek = today.getDate() - today.getDay();
-    const lastDayOfWeek = firstDayOfWeek + 6;
-    return date.getDate() >= firstDayOfWeek && date.getDate() <= lastDayOfWeek;
+    const ref = new Date(now);
+
+    // normalize to midnight for robust day comparisons
+    const _date = new Date(date);
+    _date.setHours(0, 0, 0, 0);
+    const _ref = new Date(ref);
+    _ref.setHours(0, 0, 0, 0);
+
+    const dayOfWeek = (_ref.getDay() + 6) % 7; // 0 = Monday, 6 = Sunday
+    const monday = new Date(_ref);
+    monday.setDate(_ref.getDate() - dayOfWeek);
+    monday.setHours(0, 0, 0, 0);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    return _date >= monday && _date <= sunday;
 }
 
 /**
- * Checks if a given date is within the current month.
- * @param {Date} dateTime - The date and time to compare.
- * @returns {boolean} - True if the date is within the current month, false otherwise.
+ * Checks if a given date is within the same month as the reference date.
+ * @param {Date} dateTime
+ * @param {Date} [now]
+ * @returns {boolean}
  */
-export function isThisMonth(dateTime) {
+export function isThisMonth(dateTime, now = new Date()) {
     const date = new Date(dateTime);
-    const today = new Date();
-    return date.getMonth() === today.getMonth();
+    const ref = new Date(now);
+    return date.getMonth() === ref.getMonth() && date.getFullYear() === ref.getFullYear();
 }
 
 /**
- * Checks if a given date is within the current year.
- * @param {Date} dateTime - The date and time to compare.
- * @returns {boolean} - True if the date is within the current year, false otherwise.
+ * Checks if a given date is within the same year as the reference date.
+ * @param {Date} dateTime
+ * @param {Date} [now]
+ * @returns {boolean}
  */
-export function isThisYear(dateTime) {
+export function isThisYear(dateTime, now = new Date()) {
     const date = new Date(dateTime);
-    const today = new Date();
-    return date.getFullYear() === today.getFullYear();
+    const ref = new Date(now);
+    return date.getFullYear() === ref.getFullYear();
 }
 
 /**
@@ -184,9 +218,7 @@ export function formatDate(_date, format = 'DD-MM-YYYY HH:mm:ss', addOffset = fa
         .replace('HH', hours)
         .replace('mm', minutes)
         .replace('ss', seconds);
-    if (rv === 'NaN') {
-        return '';
-    }
+    if (rv === 'NaN') return '';
     return rv;
 }
 
@@ -198,15 +230,14 @@ export function formatDate(_date, format = 'DD-MM-YYYY HH:mm:ss', addOffset = fa
  * @returns {string} - The formatted time elapsed string.
  */
 export function getTimeAgo(date, referenceDate, format = '[D] [MON] YY at HH:mm') {
-    if (!date) {
-        return '';
-    }
+    if (!date) return '';
     date = new Date(date);
     const now = new Date(referenceDate || Date.now());
     const time = date.getTime();
     const secondsAgo = (now.getTime() - time) / 1000;
     const minutesAgo = secondsAgo / 60;
     const hoursAgo = minutesAgo / 60;
+
     if (secondsAgo < 10) {
         return 'Just now';
     } else if (secondsAgo < 60) {
@@ -215,11 +246,11 @@ export function getTimeAgo(date, referenceDate, format = '[D] [MON] YY at HH:mm'
         return `${Math.round(minutesAgo)} ${minutesAgo < 2 ? 'minute' : 'minutes'} ago`;
     } else if (hoursAgo < 12) {
         return `${Math.round(hoursAgo)} ${hoursAgo < 2 ? 'hour' : 'hours'} ago`;
-    } else if (isToday(date)) {
+    } else if (isToday(date, now)) {
         return `Today at ${getTimeString(date, false)}`;
-    } else if (isYesterday(date)) {
+    } else if (isYesterday(date, now)) {
         return `Yesterday at ${getTimeString(date, false)}`;
-    } else if (isThisWeek(date)) {
+    } else if (isThisWeek(date, now)) {
         return date.toLocaleString('en-US', { weekday: 'long' }) + ' at ' + formatDate(date, 'HH:mm');
     }
     return formatDate(date, format);
