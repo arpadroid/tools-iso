@@ -17,14 +17,5 @@ module.exports = {
     globals: {},
     transformIgnorePatterns: [
         'node_modules/(?!(@arpadroid|chokidar|readdirp|anymatch|normalize-path|picomatch|glob-parent|braces|fill-range|to-regex-range|is-number|is-extglob|is-glob|chalk|glob|minimatch|yargs|yargs-parser)/)'
-    ],
-    reporters: [
-        'default',
-        [
-            'jest-junit',
-            {
-                outputName: 'junit.xml'
-            }
-        ]
     ]
 };

@@ -6,7 +6,7 @@ import {
     sortObjectArrayByKey,
     searchObjectArray,
     paginateArray
-} from './arrayTool';
+} from './arrayTool.js';
 
 describe('ArrayTool', () => {
     describe('arrayUnique', () => {
@@ -74,7 +74,10 @@ describe('ArrayTool', () => {
         });
 
         it('should handle equal values', () => {
-            const arr = [{ name: 'Alice', age: 30 }, { name: 'Alice', age: 25 }];
+            const arr = [
+                { name: 'Alice', age: 30 },
+                { name: 'Alice', age: 25 }
+            ];
             const sorted = sortObjectArrayByKey(arr, 'name');
             expect(sorted.length).toBe(2);
         });
@@ -128,7 +131,10 @@ describe('ArrayTool', () => {
         });
 
         it('should handle numeric queries', () => {
-            const items = [{ name: 'Item', price: 100 }, { name: 'Other', price: 200 }];
+            const items = [
+                { name: 'Item', price: 100 },
+                { name: 'Other', price: 200 }
+            ];
             const results = searchObjectArray(items, 100, ['price']);
             expect(results).toEqual([{ name: 'Item', price: 100 }]);
         });

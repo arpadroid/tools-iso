@@ -1,9 +1,9 @@
 /**
  * Debounce function.
- * @template T
- * @param {(...args: T[]) => void} fn
+ * @template {unknown[]} TArgs
+ * @param {(...args: TArgs) => void} fn
  * @param {number} delay
- * @returns {(...args: T[]) => void}
+ * @returns {(...args: TArgs) => void}
  */
 export function debounce(fn, delay) {
     /** @type {ReturnType<typeof setTimeout> | null} */
@@ -16,9 +16,10 @@ export function debounce(fn, delay) {
 
 /**
  * Throttle function.
- * @param {() => void} fn
+ * @template {unknown[]} TArgs
+ * @param {(...args: TArgs) => void} fn
  * @param {number} limit
- * @returns {() => void}
+ * @returns {(...args: TArgs) => void}
  */
 export function throttle(fn, limit) {
     /** @type {boolean} */

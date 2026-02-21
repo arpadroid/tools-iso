@@ -18,7 +18,7 @@ export function validateRequired(value) {
 
 /**
  * Checks if a value has a maximum length.
- * @param {string | number | unknown[]} value - The value to be checked.
+ * @param {string | number | unknown[] | null | undefined} value - The value to be checked.
  * @param {number} maxLength - The maximum length allowed.
  * @returns {boolean | undefined} - True if the value has a maximum length, false otherwise.
  */
@@ -33,7 +33,7 @@ export function validateMaxLength(value, maxLength) {
 
 /**
  * Checks if a value has a minimum length.
- * @param {string | number | unknown[]} value - The value to be checked.
+ * @param {string | number | unknown[] | null | undefined} value - The value to be checked.
  * @param {number} minLength - The minimum length allowed.
  * @returns {boolean | undefined} - True if the value has a minimum length, false otherwise.
  */
@@ -48,12 +48,12 @@ export function validateMinLength(value, minLength) {
 
 /**
  * Checks if a value has a specific length.
- * @param {string | []} value - The value to be checked.
+ * @param {string | number | unknown[] | null | undefined} value - The value to be checked.
  * @param {number} length - The specific length to be checked against.
  * @returns {boolean | undefined} - True if the value has the specific length, false otherwise.
  */
 export function validateLength(value, length) {
-    if (value?.length) {
+    if (typeof value === 'string' || Array.isArray(value)) {
         return value.length === Number(length);
     }
     if (typeof value === 'number') {
@@ -63,7 +63,7 @@ export function validateLength(value, length) {
 
 /**
  * Checks if a value has a size within a range.
- * @param {string | number} value - The value to be checked.
+ * @param {string | number | unknown[] | null | undefined} value - The value to be checked.
  * @param {number[]} size - The range of sizes allowed.
  * @returns {boolean} - True if the value has a size within the range, false otherwise.
  */

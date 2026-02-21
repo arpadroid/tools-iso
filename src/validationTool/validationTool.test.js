@@ -6,7 +6,7 @@ import {
     validateSize,
     validateRegex,
     validateNumber
-} from './validationTool';
+} from './validationTool.js';
 
 describe('Validation Tool', () => {
     describe('validateRequired', () => {

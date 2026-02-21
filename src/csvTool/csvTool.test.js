@@ -1,4 +1,4 @@
-import { encodeValueCommas, decodeValueCommas, csvToJson } from './csvTool';
+import { encodeValueCommas, decodeValueCommas, csvToJson } from './csvTool.js';
 
 describe('CsvTool', () => {
     describe('encodeValueCommas', () => {

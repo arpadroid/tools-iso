@@ -18,11 +18,11 @@ export function isObject(obj) {
 
 /**
  * Checks if an object is empty.
- * @param {Record<string, unknown>} obj
+ * @param {unknown} obj
  * @returns {boolean}
  */
 export function isEmptyObject(obj) {
-    return isObject(obj) && countProps(obj) === 0;
+    return isObject(obj) && countProps(/** @type {Record<string, unknown>} */ (obj)) === 0;
 }
 
 /**

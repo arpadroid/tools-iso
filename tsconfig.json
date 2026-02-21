@@ -18,8 +18,8 @@
         "rootDir": "./src",
         "outDir": "./.tmp/.types",
         "jsx": "react",
-        "skipLibCheck": true
+        "skipLibCheck": false
     },
     "include": ["src/**/*"],
-    "exclude": ["./node_modules", "dist", "./dist/@types", "**/*.test.js"]
+    "exclude": ["./node_modules", "dist", "./dist/@types"]
 }

@@ -1,6 +1,6 @@
 /**
  * Returns a new array with unique values.
- * @param {[]} array - The input array.
+ * @param {unknown[]} array - The input array.
  * @returns {unknown[]} - The array with unique values.
  */
 export function arrayUnique(array) {
@@ -18,7 +18,7 @@ export function arrayEmpty(array) {
 
 /**
  * Converts each element in the array to a number.
- * @param {[]} array - The input array.
+ * @param {unknown[]} array - The input array.
  * @returns {number[]} - The array with each element converted to a number.
  */
 export function arrayToNumbers(array) {
@@ -27,8 +27,8 @@ export function arrayToNumbers(array) {
 
 /**
  * Checks if two arrays are equal.
- * @param {[]} array1 - The first array.
- * @param {[]} array2 - The second array.
+ * @param {unknown[]} array1 - The first array.
+ * @param {unknown[]} array2 - The second array.
  * @returns {boolean} - True if the arrays are equal, false otherwise.
  */
 export function areArraysEqual(array1, array2) {
@@ -37,16 +37,16 @@ export function areArraysEqual(array1, array2) {
 
 /**
  * Sorts an array of objects by a specified key.
- * @param {[]} array - The input array.
- * @param {string} key - The key to sort by.
+ * @param {Record<string, unknown>[]} array - The input array.
+ * @param {string | null} key - The key to sort by.
  * @param {string} direction - The sort direction.
- * @returns {[]} - The sorted array.
+ * @returns {Record<string, unknown>[]} - The sorted array.
  */
 export function sortObjectArrayByKey(array, key, direction = 'asc') {
     if (!key) return array;
     return array.sort((itemA, itemB) => {
-        const aVal = itemA[key];
-        const bVal = itemB[key];
+        const aVal = String(itemA[key]);
+        const bVal = String(itemB[key]);
         if (aVal < bVal) return direction === 'asc' ? -1 : 1;
         if (aVal > bVal) return direction === 'asc' ? 1 : -1;
         return 0;
@@ -71,7 +71,7 @@ export function searchObjectArray(array = [], query, searchFields = ['name']) {
 
 /**
  * Paginates an array.
- * @param {[]} array - The input array.
+ * @param {unknown[]} array - The input array.
  * @param {number} perPage - The number of items per page.
  * @param {number} page - The current page.
  * @returns {unknown[]} - The paginated array.

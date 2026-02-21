@@ -1,1 +1,1 @@
-export { WaitForOptionsType } from './functionTool/functionTool.types';
+export type { WaitForOptionsType } from './functionTool/functionTool.types.d.ts';

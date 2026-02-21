@@ -15,7 +15,7 @@ import {
     timeStringToSeconds,
     getStringBetween,
     escapeHtml
-} from './stringTool';
+} from './stringTool.js';
 
 describe('dashedToCamel', () => {
     describe('dashedToCamel', () => {

@@ -16,7 +16,7 @@ import {
     removeURLParam,
     removeURLOrigin,
     getParentPath
-} from './urlTool';
+} from './urlTool.js';
 
 describe('urlTool', () => {
     describe('getParams', () => {
@@ -43,6 +43,7 @@ describe('urlTool', () => {
 
         it('should return an empty string if the array is empty', () => {
             const propName = 'colors';
+            /** @type {string[]} */
             const array = [];
             const queryString = arrayToQueryString(propName, array);
             expect(queryString).toBe('');
@@ -285,7 +286,7 @@ describe('urlTool', () => {
         it('should use window.location.href when url is not a string', () => {
             // Mock window.location.href
             const originalWindow = global.window;
-            global.window = { location: { href: 'https://example.com?test=value' } };
+            global.window = /** @type {any} */ ({ location: { href: 'https://example.com?test=value' } });
             const newUrl = removeURLParam('test', null);
             expect(newUrl).toBe('https://example.com');
             global.window = originalWindow;
@@ -347,7 +348,7 @@ describe('urlTool', () => {
 
         it('should use window.location.origin for invalid URL when window exists', () => {
             const originalWindow = global.window;
-            global.window = { location: { origin: 'http://localhost', href: 'http://localhost/' } };
+            global.window = /** @type {any} */ ({ location: { origin: 'http://localhost', href: 'http://localhost/' } });
             const result = removeURLOrigin('http://localhost/test');
             expect(result).toBe('/test');
             global.window = originalWindow;
@@ -356,7 +357,7 @@ describe('urlTool', () => {
         it('should fallback to window.location.origin on URL parse error', () => {
             const originalWindow = global.window;
             // Set up window with location that can be used as fallback
-            global.window = { location: { origin: 'invalid-url', href: 'invalid-url/' } };
+            global.window = /** @type {any} */ ({ location: { origin: 'invalid-url', href: 'invalid-url/' } });
             // This will throw in new URL() and fall back to window.location.origin replacement
             const result = removeURLOrigin('invalid-url/path');
             expect(result).toBe('/path');

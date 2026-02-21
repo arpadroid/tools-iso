@@ -19,7 +19,7 @@ import {
     getDaysInMonth,
     setDateToMonday,
     addTimezoneOffset
-} from './dateTimeTool';
+} from './dateTimeTool.js';
 
 describe('DateTimeTool', () => {
     describe('normalizeTimeZeroes', () => {

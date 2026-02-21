@@ -50,8 +50,8 @@ export function arrayToQueryString(propName, array = [], encode = true) {
 
 /**
  * Decodes a URI component safely.
- * @param {string} value - The value to be decoded.
- * @returns {string} - The decoded value.
+ * @param {unknown} value - The value to be decoded.
+ * @returns {any} - The decoded value.
  */
 export function decodeURIComponentSafe(value) {
     if (!value || typeof value !== 'string') {
@@ -169,7 +169,7 @@ export function matchPath(url, route) {
 /**
  * Matches a URL against multiple routes.
  * @param {string} url - Any URL.
- * @param {string[]} routes - An array of routes to match against.
+ * @param {unknown[]} routes - An array of routes to match against.
  * @returns {boolean} - True if there is a match, false otherwise.
  */
 export function matchPaths(url, routes) {
@@ -248,7 +248,7 @@ export function editURL(url, params = {}, encode = true) {
 /**
  * Removes a specific query string parameter from a URL.
  * @param {string} name - The name of the query string parameter to remove.
- * @param {string} url - A URL string.
+ * @param {string | null} url - A URL string.
  * @returns {string} - A new URL string without the specified query string parameter.
  */
 export function removeURLParam(name, url) {

@@ -1,6 +1,6 @@
 /**
  * Adds zero values if missing from seconds/minutes/hours.
- * @param {number} time - The time value.
+ * @param {number | string} time - The time value.
  * @returns {string} - The normalized time string.
  */
 export function normalizeTimeZeroes(time) {
@@ -224,8 +224,8 @@ export function formatDate(_date, format = 'DD-MM-YYYY HH:mm:ss', addOffset = fa
 
 /**
  * Returns a formatted string representing the time elapsed since the given date.
- * @param {Date} date - The date to compare.
- * @param {Date} referenceDate - The reference date to compare against.
+ * @param {Date | string | null} date - The date to compare.
+ * @param {Date} [referenceDate] - The reference date to compare against.
  * @param {string} format - The format string.
  * @returns {string} - The formatted time elapsed string.
  */
