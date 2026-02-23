@@ -8,7 +8,7 @@
         "utilities",
         "tools"
     ],
-    "types": "./dist/@types/index.d.ts",
+    "types": "./dist/@types/types.compiled.d.ts",
     "type": "module",
     "scripts": {
         "clean:install": "npm run clean && npm install",
@@ -21,7 +21,10 @@
         "build": "tsc"
     },
     "exports": {
-        ".": "./src/index.js",
+        ".": {
+            "types": "./dist/@types/types.compiled.d.ts",
+            "import": "./src/index.js"
+        },
         "./arrayTool": {
             "types": "./dist/@types/arrayTool/arrayTool.d.ts",
             "default": "./src/arrayTool/arrayTool.js"
