@@ -337,7 +337,7 @@ describe('DateTimeTool', () => {
             let day = 'Monday';
             if (monday.getDay() === new Date().getDay()) {
                 day = 'Today';
-            } else if (monday.getDay() === (new Date().getDay() - 1 + 7) % 7) {
+            } else if (monday.getDay() === (new Date().getDay() + 7) % 7) {
                 day = 'Yesterday';
             }
             expect(timeAgo).toBe(`${day} at ` + formatDate(monday, 'HH:mm'));
