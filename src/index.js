@@ -7,3 +7,4 @@ export * from './regexTool/regexTool.js';
 export * from './stringTool/stringTool.js';
 export * from './urlTool/urlTool.js';
 export * from './validationTool/validationTool.js';
+export * from './htmlTool/htmlTool.iso.js';
