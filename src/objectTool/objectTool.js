@@ -45,7 +45,7 @@ export function mergeObjects(obj = {}, obj2 = {}, options = {}) {
         }
         if (mergeArrays && Array.isArray(value) && Array.isArray(rv[key])) {
             rv[key] = [...new Set([...rv[key], ...value])];
-        } else if (isObject(value) && isObject(rv[key])) {
+        } else if (isObject(value) && isObject(rv[key]) && rv[key] !== obj) {
             rv[key] = mergeObjects(rv[key], value, options);
         } else {
             rv[key] = value;
