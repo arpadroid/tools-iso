@@ -18,9 +18,22 @@ export function attrString(attributes = {}) {
         } else if (typeof value === 'number' && value !== 0) {
             attrArray.push(`${attrName}="${value}"`);
         } else if (Array.isArray(value) && value.length > 0) {
-            attrArray.push(`${attrName}="${value.join(',')}"`);
+            if (key === 'class') {
+                attrArray.push(`${attrName}="${value.join(' ')}"`);
+            } else {
+                attrArray.push(`${attrName}="${value.join(',')}"`);
+            }
         }
     }
 
     return attrArray.join(' ');
+}
+
+/**
+ * Renders attributes to a node.
+ * @param {Record<string, unknown>} attributes
+ * @returns {string}
+ */
+export function $attr(attributes = {}) {
+    return attrString(attributes);
 }
