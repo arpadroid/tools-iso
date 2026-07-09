@@ -16,6 +16,7 @@ export function classNames(...classes) {
      */
     const classArr = classes
         .map(item => {
+            if (typeof item === 'function') item = item();
             if (typeof item === 'string') return item.trim();
             if (Array.isArray(item)) return classNames(...item);
             if (typeof item === 'object' && item !== null) {
