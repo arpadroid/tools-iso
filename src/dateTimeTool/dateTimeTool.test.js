@@ -1,4 +1,5 @@
 /* eslint-disable sonarjs/no-duplicate-string */
+import { describe, test, expect } from '@jest/globals';
 import {
     getTimeString,
     getTimezoneOffset,
@@ -205,22 +206,14 @@ describe('DateTimeTool', () => {
             expect(Number(seconds)).toBe(date.getSeconds());
         });
 
-        test('should return YY format (2-digit year)', () => {
+        test.each([
+            ['YY-MM-DD', '25-06-15'],
+            ['MMMM DD, YYYY', 'June 15, 2025'],
+            ['MMM DD, YYYY', 'Jun 15, 2025']
+        ])('should format with %s', (pattern, expected) => {
             const date = new Date('2025-06-15');
-            const formattedDate = formatDate(date, 'YY-MM-DD');
-            expect(formattedDate).toBe('25-06-15');
-        });
-
-        test('should return full month name with MMMM', () => {
-            const date = new Date('2025-06-15');
-            const formattedDate = formatDate(date, 'MMMM DD, YYYY');
-            expect(formattedDate).toBe('June 15, 2025');
-        });
-
-        test('should return short month name with MMM', () => {
-            const date = new Date('2025-06-15');
-            const formattedDate = formatDate(date, 'MMM DD, YYYY');
-            expect(formattedDate).toBe('Jun 15, 2025');
+            const formattedDate = formatDate(date, pattern);
+            expect(formattedDate).toBe(expected);
         });
 
         test('should return non-padded day with D', () => {
@@ -263,27 +256,17 @@ describe('DateTimeTool', () => {
     });
 
     describe('getTimeAgo', () => {
-        test('should return a time ago string', () => {
-            const date = new Date(Date.now() - 1000);
-            const timeAgo = getTimeAgo(date);
-            expect(timeAgo).toBe('Just now');
-        });
-
-        test('should return empty string for null date', () => {
-            const timeAgo = getTimeAgo(null);
-            expect(timeAgo).toBe('');
-        });
-
-        test('should return "A few seconds ago" for 10-60 seconds', () => {
-            const date = new Date(Date.now() - 30000);
-            const timeAgo = getTimeAgo(date);
-            expect(timeAgo).toBe('A few seconds ago');
-        });
-
-        test('should return a time ago string with minutes', () => {
-            const date = new Date(Date.now() - 60000);
-            const timeAgo = getTimeAgo(date);
-            expect(timeAgo).toBe('1 minute ago');
+        test.each([
+            ['should return "Just now" for a second ago', new Date(Date.now() - 1000), 'Just now'],
+            ['should return empty string for null date', null, ''],
+            [
+                'should return "A few seconds ago" for 30 seconds ago',
+                new Date(Date.now() - 30000),
+                'A few seconds ago'
+            ],
+            ['should return "1 minute ago" for 60 seconds ago', new Date(Date.now() - 60000), '1 minute ago']
+        ])('%s', (_, date, expected) => {
+            expect(getTimeAgo(date)).toBe(expected);
         });
 
         test('should return a time string 59 minutes ago', () => {
@@ -370,20 +353,11 @@ describe('DateTimeTool', () => {
     });
 
     describe('setDateToMonday', () => {
-        test('should return the date set to the first day of the week', () => {
-            const date = new Date('2021-01-01');
-            const monday = setDateToMonday(date);
-            expect(monday.getDay()).toBe(1);
-        });
-
-        test('should not change date if already Monday', () => {
-            const date = new Date('2025-01-20'); // This is a Monday
-            const monday = setDateToMonday(date);
-            expect(monday.getDay()).toBe(1);
-        });
-
-        test('should handle Sunday correctly', () => {
-            const date = new Date('2025-01-19'); // This is a Sunday
+        test.each([
+            ['should return the date set to the first day of the week', new Date('2021-01-01')],
+            ['should not change date if already Monday', new Date('2025-01-20')],
+            ['should handle Sunday correctly', new Date('2025-01-19')]
+        ])('setDateToMonday: %s', (_, date) => {
             const monday = setDateToMonday(date);
             expect(monday.getDay()).toBe(1);
         });

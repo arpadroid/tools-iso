@@ -1,7 +1,8 @@
 export default {
-    type: 'library',
-    name: 'tools-iso',
+    buildType: 'library',
+    buildManifest: false,
+    buildI18n: false,
     buildStyles: false,
     buildTypes: true,
-    buildJs: false
+    buildJS: false
 };

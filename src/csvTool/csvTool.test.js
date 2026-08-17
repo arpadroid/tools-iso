@@ -1,43 +1,24 @@
 import { encodeValueCommas, decodeValueCommas, csvToJson } from './csvTool.js';
+import { describe, it, expect } from '@jest/globals';
 
 describe('CsvTool', () => {
     describe('encodeValueCommas', () => {
-        it('should encode commas within double quotes in a text', () => {
-            const text = 'John,Doe,"Hello, World",42';
-            const encodedText = encodeValueCommas(text);
-            expect(encodedText).toBe('John,Doe,"Hello[valueComma] World",42');
-        });
-
-        it('should not encode commas outside of double quotes', () => {
-            const text = 'John,Doe,Hello, World, 42';
-            const encodedText = encodeValueCommas(text);
-            expect(encodedText).toBe(text);
-        });
-
-        it('should handle multiple quoted values', () => {
-            const text = '"first, value","second, value"';
-            const encodedText = encodeValueCommas(text);
-            expect(encodedText).toBe('"first[valueComma] value","second[valueComma] value"');
+        it.each([
+            ['John,Doe,"Hello, World",42', 'John,Doe,"Hello[valueComma] World",42'],
+            ['John,Doe,Hello, World, 42', 'John,Doe,Hello, World, 42'],
+            ['"first, value","second, value"', '"first[valueComma] value","second[valueComma] value"']
+        ])('should encode %s to %s', (text, expected) => {
+            expect(encodeValueCommas(text)).toBe(expected);
         });
     });
 
     describe('decodeValueCommas', () => {
-        it('should decode encoded commas within double quotes in a text', () => {
-            const text = 'John,Doe,"Hello[valueComma] World",42';
-            const decodedText = decodeValueCommas(text);
-            expect(decodedText).toBe('John,Doe,"Hello, World",42');
-        });
-
-        it('should not decode commas outside of double quotes', () => {
-            const text = 'John,Doe,Hello, World,42';
-            const decodedText = decodeValueCommas(text);
-            expect(decodedText).toBe('John,Doe,Hello, World,42');
-        });
-
-        it('should handle multiple encoded commas', () => {
-            const text = 'a[valueComma]b[valueComma]c';
-            const decodedText = decodeValueCommas(text);
-            expect(decodedText).toBe('a,b,c');
+        it.each([
+            ['John,Doe,"Hello[valueComma] World",42', 'John,Doe,"Hello, World",42'],
+            ['John,Doe,Hello, World,42', 'John,Doe,Hello, World,42'],
+            ['a[valueComma]b[valueComma]c', 'a,b,c']
+        ])('should decode %s to %s', (text, expected) => {
+            expect(decodeValueCommas(text)).toBe(expected);
         });
     });
 

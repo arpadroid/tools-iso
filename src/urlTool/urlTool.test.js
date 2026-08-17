@@ -1,3 +1,4 @@
+import { describe, it, expect } from '@jest/globals';
 import {
     getURLParams,
     arrayToQueryString,
@@ -322,8 +323,8 @@ describe('urlTool', () => {
 
     describe('decodeURIComponentSafe', () => {
         it('should return value unchanged for non-string', () => {
-            expect(decodeURIComponentSafe(null)).toBe(null);
-            expect(decodeURIComponentSafe(undefined)).toBe(undefined);
+            expect(decodeURIComponentSafe(null)).toBeNull();
+            expect(decodeURIComponentSafe(undefined)).toBeUndefined();
         });
 
         it('should handle malformed percent encoding', () => {

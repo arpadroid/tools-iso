@@ -1,3 +1,4 @@
+import { describe, it, expect } from '@jest/globals';
 import {
     validateRequired,
     validateMaxLength,
@@ -74,8 +75,8 @@ describe('Validation Tool', () => {
         });
 
         it('should return undefined for values without length', () => {
-            expect(validateMaxLength(null, 10)).toBe(undefined);
-            expect(validateMaxLength(undefined, 10)).toBe(undefined);
+            expect(validateMaxLength(null, 10)).toBeUndefined();
+            expect(validateMaxLength(undefined, 10)).toBeUndefined();
         });
     });
 
@@ -99,7 +100,7 @@ describe('Validation Tool', () => {
         });
 
         it('should return undefined for values without length', () => {
-            expect(validateMinLength(null, 10)).toBe(undefined);
+            expect(validateMinLength(null, 10)).toBeUndefined();
         });
     });
 
@@ -123,7 +124,7 @@ describe('Validation Tool', () => {
         });
 
         it('should return undefined for values without length', () => {
-            expect(validateLength(null, 5)).toBe(undefined);
+            expect(validateLength(null, 5)).toBeUndefined();
         });
     });
 

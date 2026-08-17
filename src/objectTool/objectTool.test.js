@@ -1,4 +1,5 @@
 /* eslint-disable id-length */
+import { describe, test, expect, jest } from '@jest/globals';
 import {
     isObject,
     mergeObjects,

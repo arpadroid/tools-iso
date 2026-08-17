@@ -1,3 +1,4 @@
+import { describe, test, expect } from '@jest/globals';
 import {
     dashedToCamel,
     camelToDashed,
@@ -172,7 +173,7 @@ describe('dashedToCamel', () => {
 
         test('limits length to 50 characters', () => {
             const longString = 'a'.repeat(100);
-            expect(sanitizeSearchInput(longString).length).toBe(50);
+            expect(sanitizeSearchInput(longString)).toHaveLength(50);
         });
     });
 

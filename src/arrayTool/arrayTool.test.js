@@ -1,3 +1,4 @@
+import { describe, it, expect } from '@jest/globals';
 import {
     arrayUnique,
     arrayEmpty,
@@ -79,7 +80,7 @@ describe('ArrayTool', () => {
                 { name: 'Alice', age: 25 }
             ];
             const sorted = sortObjectArrayByKey(arr, 'name');
-            expect(sorted.length).toBe(2);
+            expect(sorted).toHaveLength(2);
         });
     });
 

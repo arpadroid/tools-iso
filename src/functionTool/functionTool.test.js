@@ -1,5 +1,5 @@
 import { debounce, throttle, waitFor } from './functionTool.js';
-
+import { describe, test, expect, jest, afterEach } from '@jest/globals';
 const store = {
     conditionMet: false
 };
