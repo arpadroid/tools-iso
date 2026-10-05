@@ -9,7 +9,7 @@ import { removeSlashes } from '../stringTool/stringTool.js';
 export function validateRequired(value) {
     return Boolean(
         typeof value === 'boolean' ||
-            (typeof value === 'string' && value.length) ||
+            (typeof value === 'string' && value.trim().length) ||
             (Array.isArray(value) && value.length) ||
             (typeof value === 'object' && value !== null && Object.keys(value).length) ||
             (typeof value === 'number' && !isNaN(value))
