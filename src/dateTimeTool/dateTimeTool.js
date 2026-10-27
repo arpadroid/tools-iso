@@ -188,6 +188,25 @@ export function addTimezoneOffset(date) {
     return date;
 }
 
+const fmtCache = new Map();
+/**
+ * Gets a formatter for the month.
+ * @param {string} locale
+ * @param {'long' | 'short' | 'narrow' | 'numeric' | '2-digit'} month
+ * @returns {Intl.DateTimeFormat}
+ */
+const getFmt = (locale, month) => {
+    const key = locale + month;
+    if (!fmtCache.has(key)) fmtCache.set(key, new Intl.DateTimeFormat(locale, { month }));
+    return fmtCache.get(key);
+};
+/**
+ * Pads a number with a leading zero when needed.
+ * @param {number} num
+ * @returns {string}
+ */
+const pad = num => String(num).padStart(2, '0');
+
 /**
  * Formats a given date into a specified format.
  * @param {Date | string} _date - The date object to format.
@@ -198,28 +217,23 @@ export function addTimezoneOffset(date) {
  */
 export function formatDate(_date, format = 'DD-MM-YYYY HH:mm:ss', addOffset = false, locale = 'en-US') {
     let date = new Date(_date);
-    if (addOffset) {
-        date = addTimezoneOffset(date);
-    }
-    const year = date.getFullYear();
-    const month = normalizeTimeZeroes(date.getMonth() + 1);
-    const day = normalizeTimeZeroes(date.getDate());
-    const hours = normalizeTimeZeroes(date.getHours());
-    const minutes = normalizeTimeZeroes(date.getMinutes());
-    const seconds = normalizeTimeZeroes(date.getSeconds());
-    const rv = format
-        .replace('YYYY', year.toString())
-        .replace('YY', year.toString().substr(-2))
-        .replace('MMMM', date.toLocaleString(locale, { month: 'long' }))
-        .replace('MMM', date.toLocaleString(locale, { month: 'short' }))
-        .replace('MM', month)
-        .replace('DD', day)
-        .replace('D', parseFloat(day).toString())
-        .replace('HH', hours)
-        .replace('mm', minutes)
-        .replace('ss', seconds);
-    if (rv === 'NaN') return '';
-    return rv;
+    if (isNaN(date.getTime())) return '';
+    if (addOffset) date = addTimezoneOffset(date);
+    /** @type {Record<string, () => string>} */
+    const tokens = {
+        YYYY: () => String(date.getFullYear()),
+        YY: () => String(date.getFullYear()).slice(-2),
+        MMMM: () => getFmt(locale, 'long').format(date),
+        MMM: () => getFmt(locale, 'short').format(date),
+        MM: () => pad(date.getMonth() + 1),
+        DD: () => pad(date.getDate()),
+        // eslint-disable-next-line id-length
+        D: () => String(date.getDate()),
+        HH: () => pad(date.getHours()),
+        mm: () => pad(date.getMinutes()),
+        ss: () => pad(date.getSeconds())
+    };
+    return format.replace(/YYYY|YY|MMMM|MMM|MM|DD|D|HH|mm|ss/g, token => tokens[token]());
 }
 
 /**
