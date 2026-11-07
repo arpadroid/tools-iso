@@ -9,7 +9,7 @@ export function countProps(obj) {
 
 /**
  * Checks if an object is an object and not an array or HTMLElement.
- * @param {unknown} obj
+ * @param {unknown | Record<string, unknown>} obj
  * @returns {boolean}
  */
 export function isObject(obj) {

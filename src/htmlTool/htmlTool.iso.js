@@ -4,6 +4,22 @@
 import { camelToDashed } from '../stringTool/stringTool.js';
 
 /**
+ * Returns class names from an object.
+ * @param {unknown | Record<string, boolean>} obj
+ * @returns {string}
+ */
+export function getObjectClassNames(obj) {
+    if (typeof obj !== 'object' || obj === null) {
+        return '';
+    }
+    let out = '';
+    for (const [key, value] of Object.entries(obj)) {
+        if (value) out += ` ${key || ''}`;
+    }
+    return out.trim();
+}
+
+/**
  * Renders a class attribute.
  * @param {...ClassNamesValueType} classes
  * @returns {string}
@@ -19,18 +35,10 @@ export function classNames(...classes) {
             if (typeof item === 'function') item = item();
             if (typeof item === 'string') return item.trim();
             if (Array.isArray(item)) return classNames(...item);
-            if (typeof item === 'object' && item !== null) {
-                let out = '';
-                for (const [key, value] of Object.entries(item)) {
-                    if (value) out += ` ${key}`;
-                }
-                return out.trim();
-            }
-            return '';
+            return getObjectClassNames(item);
         })
         .filter(Boolean)
-        .join(' ')
-        .split(' ');
+        .filter(val => !['true', 'false'].includes(val));
 
     return [...new Set(classArr)].join(' ').replace(/\s+/g, ' ').trim();
 }
