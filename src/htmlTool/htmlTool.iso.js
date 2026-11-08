@@ -38,6 +38,8 @@ export function classNames(...classes) {
             return getObjectClassNames(item);
         })
         .filter(Boolean)
+        .join(' ')
+        .split(' ')
         .filter(val => !['true', 'false'].includes(val));
 
     return [...new Set(classArr)].join(' ').replace(/\s+/g, ' ').trim();
