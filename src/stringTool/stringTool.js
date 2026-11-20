@@ -126,8 +126,18 @@ export function removeWhiteSpace(str) {
  * @returns {string} The string without slashes.
  */
 export function removeSlashes(str) {
-    // eslint-disable-next-line sonarjs/slow-regex, sonarjs/anchor-precedence
-    return str?.replace(/^\/+|\/+$/g, '');
+    if (!str) {
+        return str;
+    }
+    let start = 0;
+    let end = str.length;
+    while (start < end && str[start] === '/') {
+        start++;
+    }
+    while (end > start && str[end - 1] === '/') {
+        end--;
+    }
+    return str.slice(start, end);
 }
 
 /**
