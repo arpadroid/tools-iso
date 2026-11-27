@@ -87,7 +87,7 @@
     "homepage": "https://github.com/arpadroid/tools-iso#readme",
     "devDependencies": {
         "@arpadroid/module": "file:../module",
-        "@babel/preset-env": "^8.0.2",
+        "@babel/preset-env": "^8.0.7",
         "typescript": "^7.0.2"
     }
 }

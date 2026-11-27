@@ -222,9 +222,9 @@ describe('DateTimeTool', () => {
             expect(formattedDate).toBe('5/06/2025');
         });
 
-        test('should return NaN for invalid date', () => {
+        test('should return empty for invalid date', () => {
             const formattedDate = formatDate('invalid', 'YYYY-MM-DD');
-            expect(formattedDate).toBe('NaN-NaN-NaN');
+            expect(formattedDate).toBe('');
         });
 
         test('should return empty string when formatted result is NaN', () => {
